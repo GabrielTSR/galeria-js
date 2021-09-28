@@ -13,12 +13,12 @@ const imagens = [
 
 function definirImagemAnterior(indice, imagensArray) {
 
-    return indice > 0 ? imagensArray[indice - 1] : imagensArray[imagensArray.lenght - 1]
+    return indice > 0 ? imagensArray[indice - 1] : imagensArray[imagensArray.length - 1]
 }
 
 function definirImagemSeguinte(indice, imagensArray) {
 
-    return imagensArray.lenght - 1 > indice ? imagensArray[indice + 1] : imagensArray[0]
+    return imagensArray.length - 1 > indice ? imagensArray[indice + 1] : imagensArray[0]
 }
 
 // const limparId = (urlImagem) => urlImagem.split("/")[2].split('.')[0].replace(" ", "-")
