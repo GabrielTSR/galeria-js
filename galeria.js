@@ -1,68 +1,69 @@
 "use strict"
 
-const imagens = [
-    './img/castelo.png',
-    './img/cidade_caos.jpg',
-    './img/floresta.jpg',
-    './img/ilha_voadora.jpg',
-    './img/labirinto.jpg',
-    './img/navio_na_montanha.jpg',
-    './img/piramide_serpente.jpg',
-    './img/universo.png',
-]
-
-function definirImagemAnterior(indice, imagensArray) {
-
-    return limparId(indice > 0 ? imagensArray[indice - 1] : imagensArray[imagensArray.length - 1])
+const limpar = (elemento) => {
+    while (elemento.firstChild) {
+        elemento.removeChild(elemento.lastChild)
+    }
 }
 
-function definirImagemSeguinte(indice, imagensArray) {
+const pegarImagens = (raca) => fetch(`https://dog.ceo/api/breed/${raca}/images`)
 
-    return limparId(imagensArray.length - 1 > indice ? imagensArray[indice + 1] : imagensArray[0])
+const procurarImagens = async(evento) => {
+
+    if (evento.key === 'Enter') {
+        const raca = evento.target.value
+        const imagensResponse = await pegarImagens(raca)
+        const imagens = await imagensResponse.json()
+        limpar(document.querySelector(".galeria-container"))
+        limpar(document.querySelector(".slide-container"))
+        carregarImagens(imagens.message)
+        carregarSlides(imagens.message)
+    }
+
 }
 
-const limparId = (urlImagem) => urlImagem.split("/")[2].split('.')[0].replace(" ", "-")
+const limparId = (urlImagem) => {
+    const posBarra = urlImagem.lastIndexOf('/') + 1
+    const posPonto = urlImagem.lastIndexOf('.')
+    return urlImagem.substring(posBarra, posPonto)
+}
 
-const criarSlider = (urlImagem, indice, imagensArray) => {
+const criarItem = (urlImagem) => {
+    const container = document.querySelector(".galeria-container")
+    const novoLink = document.createElement("a")
+    novoLink.href = `#${ limparId(urlImagem)}`
+    novoLink.classList.add("galeria-item")
+    novoLink.innerHTML = `<img src="${urlImagem}" alt="">`
+    container.appendChild(novoLink)
+}
 
-    const slideContainer = document.querySelector('.slide-container')
+const carregarImagens = (imagens) => imagens.forEach(criarItem)
+
+const criarSlide = (urlImagem, indice, arr) => {
+    const container = document.querySelector(".slide-container")
     const slide = document.createElement("div")
     slide.classList.add("slide")
     slide.id = limparId(urlImagem)
-    slide.innerHTML = ` 
-    <div class="imagem-container">
-    <a href="#" class="fechar">&#128473;</a>
-    <a href="#${definirImagemAnterior(indice, imagensArray)}" class="navegacao anterior">&#171;</a>
-    <img src="${urlImagem}" alt="">
-    <a href="#${definirImagemSeguinte(indice, imagensArray)}" class="navegacao proximo">&#187;</a>
-    </div>`
 
-    slideContainer.appendChild(slide)
+    const indiceAnterior = indice > 0 ? indice - 1 : arr.length - 1
+    const idAnterior = limparId(arr[indiceAnterior])
+
+    const indiceProximo = indice < arr.length - 1 ? indice + 1 : 0
+    const idProximo = limparId(arr[indiceProximo])
+
+    slide.innerHTML = `
+            <div class="imagem-container">
+                <a href="#" class="fechar">&#128473;</a>
+                <a href="#${idAnterior}" class="navegacao anterior">&#171;</a>
+                <img src="${urlImagem}" alt="">
+                <a href="#${idProximo}" class="navegacao proximo">&#187;</a>
+            </div>`
+
+    container.appendChild(slide)
 }
 
-const criarItem = (urlImagem, indice, imagensArray) => {
-    const container = document.querySelector('.galeria-container')
 
-    //FORMA BASTANTE ENCONTRADA NA WEB, MAS SACRIFICA A VELOCIDADE DO SITE, UMA VEZ QUE O INNER RECRIARÁ A TAG DIVERSAS VEZES.
+const carregarSlides = (imagens) => imagens.forEach(criarSlide)
 
-    // container.innerHTML += `
-    // <a href="${urlImagem}" class="galeria-item">
-    //     <img src="${urlImagem}" alt="castelo">
-    // </a>
-    // `
 
-    const novoLink = document.createElement("a")
-    novoLink.href = "#" + limparId(urlImagem)
-    novoLink.classList.add("galeria-item")
-    novoLink.innerHTML = `<img src="${urlImagem}" alt="">`
-
-    //antes, a variavel "novoLink" estava na memória, com o appendChild ele se incluirá oficialmente no container
-    container.appendChild(novoLink)
-
-    criarSlider(urlImagem, indice, imagensArray)
-
-}
-
-const carregarImagens = () => imagens.forEach(criarItem)
-
-carregarImagens()
+document.querySelector(".pesquisa-container input").addEventListener("keypress", procurarImagens)
