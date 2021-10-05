@@ -13,25 +13,25 @@ const imagens = [
 
 function definirImagemAnterior(indice, imagensArray) {
 
-    return indice > 0 ? imagensArray[indice - 1] : imagensArray[imagensArray.length - 1]
+    return limparId(indice > 0 ? imagensArray[indice - 1] : imagensArray[imagensArray.length - 1])
 }
 
 function definirImagemSeguinte(indice, imagensArray) {
 
-    return imagensArray.length - 1 > indice ? imagensArray[indice + 1] : imagensArray[0]
+    return limparId(imagensArray.length - 1 > indice ? imagensArray[indice + 1] : imagensArray[0])
 }
 
-// const limparId = (urlImagem) => urlImagem.split("/")[2].split('.')[0].replace(" ", "-")
+const limparId = (urlImagem) => urlImagem.split("/")[2].split('.')[0].replace(" ", "-")
 
 const criarSlider = (urlImagem, indice, imagensArray) => {
 
     const slideContainer = document.querySelector('.slide-container')
     const slide = document.createElement("div")
     slide.classList.add("slide")
-    slide.id = urlImagem
+    slide.id = limparId(urlImagem)
     slide.innerHTML = ` 
     <div class="imagem-container">
-    <a href="" class="fechar">&#128473;</a>
+    <a href="#" class="fechar">&#128473;</a>
     <a href="#${definirImagemAnterior(indice, imagensArray)}" class="navegacao anterior">&#171;</a>
     <img src="${urlImagem}" alt="">
     <a href="#${definirImagemSeguinte(indice, imagensArray)}" class="navegacao proximo">&#187;</a>
@@ -52,7 +52,7 @@ const criarItem = (urlImagem, indice, imagensArray) => {
     // `
 
     const novoLink = document.createElement("a")
-    novoLink.href = "#" + urlImagem
+    novoLink.href = "#" + limparId(urlImagem)
     novoLink.classList.add("galeria-item")
     novoLink.innerHTML = `<img src="${urlImagem}" alt="">`
 
